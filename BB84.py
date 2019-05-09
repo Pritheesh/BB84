@@ -2,10 +2,12 @@ import numpy as np
 from hamming import *
 from Alice import Alice
 from Bob import Bob
+from prettytable import PrettyTable
 
-n = 15
-k = 11
-m = 4
+BIT_SIZE = 1500
+n = 127
+k = 120
+m = 7
 
 def initialize_alice(length):
     return Alice(generate_random_bits(length), generate_random_bases(length))
@@ -23,7 +25,10 @@ def generate_random_bases(length):
     return np.random.choice(list("dr"), length)
 
 def compare_bases(alice_bases, bob_bases):
-    return [1 if x == y else 0 for x, y in zip(alice_bases, bob_bases)]
+    return ["✓" if x == y else '' for x, y in zip(alice_bases, bob_bases)]
+
+def get_match_bits(alice_bits, match_bits):
+    return [x if y == "✓" else '' for x, y in zip(alice_bits, match_bits)]
 
 
 # alice = Alice([0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1], list("drdrrrrrddrdddr"))
@@ -33,7 +38,11 @@ def compare_bases(alice_bases, bob_bases):
 
 alice = initialize_alice(1024)
 bob = initialize_bob(1024)
-bob.measure(alice.photons, bob.bases)
+
+
+
+
+bob.measure(alice.photons)
 bob.decode()
 
 
@@ -60,26 +69,50 @@ g = get_generator_matrix(h)
 
 
 
+t = PrettyTable(['']+list(range(BIT_SIZE)))
 
 
-alice = initialize_alice(22)
+alice = initialize_alice(BIT_SIZE)
+alice.encode()
+t.add_row(['Alice bits'] + list(alice.bits))
+t.add_row(['Alice bases'] + list(alice.bases))
+t.add_row(['Alice photons'] + list(alice.photons))
+bob = initialize_bob(BIT_SIZE)
+bob.measure(alice.photons)
+bob.decode()
+t.add_row(['Bobs bases'] + list(bob.bases))
+t.add_row(['Bobs photons'] + list(bob.photons))
+t.add_row(['Bobs Bits'] + list(alice.bits))
+compare_list = compare_bases(alice.bases, bob.bases)
+t.add_row(['Equal bits'] + compare_list)
+prefinal_key = get_match_bits(alice.bits, compare_list)
+t.add_row(['Pre final Key bits'] + prefinal_key)
+# print(t)
+
 # print(alice.bits)
-chunks = get_chunks(alice.bits, k)
+prefinal_key = [x for x in prefinal_key if x != ""]
+print(prefinal_key)
+chunks = get_chunks(prefinal_key , k)
 chunks = list(chunks)
 # print(chunks)
 encoded_list = []
 for i, chunk in enumerate(chunks):
     chunks[i] = list(chunk)
     encoded = encode(g, chunk, k)
-    chunks[i][3] = 1 - chunks[i][3]
+    if np.random.choice([0,1]) == 1:
+        random = np.random.randint(4)
+        print("introducing error in chunk ", i, "position ", random)
+        chunks[i][random] = 1 - chunks[i][random]
     encoded_list.append(encoded[-m:])
 
 # print(encoded_list)
 # print(chunks)
-for chunk, encoded in zip(chunks, encoded_list):
+for i, (chunk, encoded) in enumerate(zip(chunks, encoded_list)):
     encoded = np.concatenate((chunk, encoded))
     decoded = decode(h, encoded)
     n = get_error_from_syndrome(decoded, h)
-    print(decoded)
-    print(n)
-print(h)
+    if(n != -1 ):
+        print("Found error in chunk ", i, "position ", n)
+    # print(decoded)
+    # print(n)
+# print(h)

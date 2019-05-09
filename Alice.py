@@ -14,7 +14,7 @@ class Alice:
 
     def _encode(self, bit, basis):
         if(bit == 0):
-            return 0 if basis == 'r' else 45
+            return "→" if basis == 'r' else "↗"
         else:
-            return 90 if basis == 'r' else 135
+            return "↑" if basis == 'r' else "↖"
             
