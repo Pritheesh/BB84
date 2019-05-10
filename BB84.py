@@ -91,7 +91,7 @@ print(t)
 
 # print(alice.bits)
 prefinal_key = [x for x in prefinal_key if x != ""]
-print(prefinal_key)
+# print(prefinal_key)
 chunks = get_chunks(prefinal_key , k)
 chunks = list(chunks)
 # print(chunks)
@@ -99,10 +99,10 @@ encoded_list = []
 for i, chunk in enumerate(chunks):
     chunks[i] = list(chunk)
     encoded = encode(g, chunk, k)
-    print(encoded)
+    # print(encoded)
     if np.random.choice([0,1]) == 1:
         random = np.random.randint(4)
-        print("introducing error in chunk ", i, "position ", random)
+        print("Alice introducing error in chunk ", i, "position ", random)
         chunks[i][random] = 1 - chunks[i][random]
     encoded_list.append(encoded[-m:])
 
@@ -113,7 +113,7 @@ for i, (chunk, encoded) in enumerate(zip(chunks, encoded_list)):
     decoded = decode(h, encoded)
     n = get_error_from_syndrome(decoded, h)
     if(n != -1 ):
-        print("Found error in chunk ", i, "position ", n)
+        print("Bob Found error in chunk ", i, "position ", n)
     # print(decoded)
     # print(n)
 # print(h)
