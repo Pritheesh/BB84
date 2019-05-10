@@ -25,12 +25,12 @@ def get_parity_check_matrix(n, m):
     temp = np.zeros((n-m, m), dtype=int)
     index = 0
     for i in range(3, n + 1):
-        if not is_power_of_two(i):
+        if not __is_power_of_two(i):
             temp[index] = list(str(bin(i)[2:]).zfill(m))
             index += 1
     return np.concatenate((temp.transpose(), np.identity(m, dtype=int)), axis=1)
 
-def is_power_of_two(num):
+def __is_power_of_two(num):
     """
     Checks if the number is a power of two
 

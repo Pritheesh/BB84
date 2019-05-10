@@ -9,7 +9,7 @@ from helper import *
 
 KEY_SIZE = 500
 
-BIT_SIZE = 4
+BIT_SIZE = 5
 n = 2 ** BIT_SIZE - 1
 m = BIT_SIZE
 k = n - m
@@ -43,7 +43,6 @@ t.add_row(['Pre final Key bits'] + prefinal_key)
 
 # print(alice.bits)
 prefinal_key = [x for x in prefinal_key if x != ""]
-print(len(prefinal_key))
 chunks = list(get_chunks(prefinal_key , k))
 
 parity_list = []
@@ -67,12 +66,11 @@ for i, (chunk, encoded) in enumerate(zip(chunks, parity_list)):
         discard_list.extend(indices)
         print("Bob Found error in chunk ", i, "position ", n)
 
-print(discard_list)
-print(len(discard_list))
-print(len(prefinal_key))
-# print(prefinal_key)
+print("Length of bits to be removed: ", len(discard_list))
+print("Length of key before discard: ", len(prefinal_key))
 final_key = del_list_numpy(prefinal_key, discard_list)
-print(len(final_key))
-# final_key = [x for x ]
+print("Length of key after discard: ", len(final_key))
+print("Final key: ", final_key)
+
 
 
