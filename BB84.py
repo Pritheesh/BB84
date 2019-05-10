@@ -4,10 +4,10 @@ from Alice import Alice
 from Bob import Bob
 from prettytable import PrettyTable
 
-BIT_SIZE = 1500
-n = 127
-k = 120
-m = 7
+BIT_SIZE = 16
+n = 7
+k = 4
+m = 3
 
 def initialize_alice(length):
     return Alice(generate_random_bits(length), generate_random_bases(length))
@@ -87,7 +87,7 @@ compare_list = compare_bases(alice.bases, bob.bases)
 t.add_row(['Equal bits'] + compare_list)
 prefinal_key = get_match_bits(alice.bits, compare_list)
 t.add_row(['Pre final Key bits'] + prefinal_key)
-# print(t)
+print(t)
 
 # print(alice.bits)
 prefinal_key = [x for x in prefinal_key if x != ""]
@@ -99,6 +99,7 @@ encoded_list = []
 for i, chunk in enumerate(chunks):
     chunks[i] = list(chunk)
     encoded = encode(g, chunk, k)
+    print(encoded)
     if np.random.choice([0,1]) == 1:
         random = np.random.randint(4)
         print("introducing error in chunk ", i, "position ", random)
